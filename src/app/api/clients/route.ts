@@ -3,10 +3,12 @@ import { getClients, upsertClient, deleteClient } from '@/lib/sheets';
 
 export async function GET() {
   try {
-    return NextResponse.json(await getClients());
-  } catch (err) {
-    console.error('[GET /api/clients]', err);
-    return NextResponse.json({ error: 'שגיאה בטעינת הלקוחות' }, { status: 500 });
+    const clients = await getClients();
+    return NextResponse.json(clients);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[GET /api/clients]', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
@@ -15,9 +17,10 @@ export async function POST(req: NextRequest) {
     const client = await req.json();
     await upsertClient(client);
     return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error('[POST /api/clients]', err);
-    return NextResponse.json({ error: 'שגיאה בשמירת הלקוחה' }, { status: 500 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[POST /api/clients]', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
@@ -26,8 +29,9 @@ export async function DELETE(req: NextRequest) {
     const { id } = await req.json();
     await deleteClient(id);
     return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error('[DELETE /api/clients]', err);
-    return NextResponse.json({ error: 'שגיאה במחיקת הלקוחה' }, { status: 500 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[DELETE /api/clients]', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
