@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { height: 100%; }
+
+  body {
+    min-height: 100%;
+    font-family: 'Heebo', system-ui, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 100% 0%, #fbe7f0 0%, rgba(251,231,240,0) 55%),
+      radial-gradient(1000px 700px at 0% 100%, #fdeef0 0%, rgba(253,238,240,0) 50%),
+      #fdf6f9;
+    color: #46213a;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb {
+    background: #f0c0d4;
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e69cba;
+    background-clip: content-box;
+  }
+}
+
+@layer utilities {
+  /* Entrance animations — transform-only so content is never hidden */
+  @keyframes fadeUp {
+    from { transform: translateY(14px); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { transform: translateY(8px) scale(0.98); }
+    to   { transform: translateY(0) scale(1); }
+  }
+  @keyframes backdropIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .anim-fade-up  { animation: fadeUp     0.5s  cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .anim-scale-in { animation: scaleIn    0.32s cubic-bezier(0.2, 0.9, 0.25, 1) both; }
+  .anim-fade-in  { animation: backdropIn 0.3s  ease both; }
+
+  [data-tab-enter] { animation: fadeUp 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  /* Progress photo placeholder */
+  .stripe-ph {
+    background-image: repeating-linear-gradient(
+      135deg,
+      #f7dbe7 0 12px,
+      #fbedf3 12px 24px
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-fade-up,
+    .anim-scale-in,
+    [data-tab-enter] { animation: none !important; }
+  }
+}
