@@ -97,7 +97,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const title = TITLES[pathname] ?? '';
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex overflow-x-hidden">
       <Sidebar pathname={pathname} onLogout={logout} />
 
       <main className="flex-1 min-w-0 flex flex-col">
