@@ -3,7 +3,7 @@ import { jwtVerify } from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'fallback-dev-secret');
 
-const PUBLIC = ['/login', '/api/auth/login'];
+const PUBLIC = ['/login', '/api/auth/login', '/api/health'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

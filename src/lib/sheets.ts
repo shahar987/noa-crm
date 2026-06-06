@@ -5,7 +5,7 @@ import type { Client, Product } from '@/types';
 const SHEET_ID = process.env.GOOGLE_SHEETS_ID!;
 
 async function sheets() {
-  const auth = await getGoogleAuth().getClient();
+  const auth = getGoogleAuth(); // JWT — no .getClient() needed
   return google.sheets({ version: 'v4', auth: auth as never });
 }
 
