@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { JWT } from 'google-auth-library';
 
 const SCOPES = [
@@ -17,17 +18,17 @@ export function getGoogleAuth(): JWT {
     );
   }
 
-  // Normalise the private key regardless of how Vercel stored it:
-  // - strip accidental surrounding quotes
-  // - convert literal \n → real newlines
-  // - strip \r (Windows line endings)
-  const privateKey = rawKey
+  const privateKeyPem = rawKey
     .replace(/^["']|["']$/g, '')
     .replace(/\\n/g, '\n')
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n');
 
-  // JWT bypasses the GoogleAuth.getClient() path that triggers the
-  // OpenSSL 3 "DECODER routines::unsupported" error on Node 18+.
-  return new JWT({ email, key: privateKey, scopes: SCOPES });
+  // Pre-parse the PEM into a KeyObject so that jwa/jws uses the
+  // crypto.sign(keyObject) path instead of crypto.createSign().sign(pemString).
+  // The PEM-string path goes through OpenSSL 3's legacy decoder which throws
+  // "DECODER routines::unsupported" on Node 18. The KeyObject path does not.
+  const key = crypto.createPrivateKey(privateKeyPem) as unknown as string;
+
+  return new JWT({ email, key, scopes: SCOPES });
 }
