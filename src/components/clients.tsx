@@ -57,7 +57,6 @@ function formatAppt(v: string) {
 }
 
 function AppointmentPicker({ value, onChange }: { value?: string; onChange: (v: string) => void }) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const has = !!value;
   const past = has && new Date(value!).getTime() < Date.now();
 
@@ -67,32 +66,33 @@ function AppointmentPicker({ value, onChange }: { value?: string; onChange: (v: 
       ? 'border-amber-200 text-amber-700 bg-amber-50'
       : 'border-transparent text-white bg-gradient-to-l from-blush-500 to-rosegold-500 shadow-royal-sm';
 
-  function openPicker(e: React.MouseEvent) {
-    e.stopPropagation();
-    const el = inputRef.current;
-    if (!el) return;
-    if (typeof (el as HTMLInputElement & { showPicker?: () => void }).showPicker === 'function') {
-      try { (el as HTMLInputElement & { showPicker: () => void }).showPicker(); return; } catch { /* fall through */ }
-    }
-    el.focus(); el.click();
-  }
-
   return (
     <div className="relative inline-flex items-center gap-1" onClick={e => e.stopPropagation()}>
-      <button type="button" onClick={openPicker}
-        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[13px] font-semibold border transition ${tone}`}>
-        <CalendarClock size={15} />
-        {has ? formatAppt(value!) : 'קביעת תור הבא'}
-        {has && <ChevronDown size={13} className="opacity-70" />}
-      </button>
+      {/* Wrapper positions the invisible input exactly over the button so iOS
+          Safari receives a direct tap on the input — the only way it opens
+          its native date picker (programmatic .click()/.showPicker() don't work). */}
+      <div className="relative">
+        <button type="button" tabIndex={-1} aria-hidden="true"
+          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[13px] font-semibold border transition ${tone}`}>
+          <CalendarClock size={15} />
+          {has ? formatAppt(value!) : 'קביעת תור הבא'}
+          {has && <ChevronDown size={13} className="opacity-70" />}
+        </button>
+        <input
+          type="datetime-local"
+          value={value || ''}
+          onChange={e => onChange(e.target.value)}
+          onClick={e => e.stopPropagation()}
+          className="absolute inset-0 opacity-0 cursor-pointer"
+          style={{ fontSize: 16 }}
+        />
+      </div>
       {has && (
         <button type="button" onClick={e => { e.stopPropagation(); onChange(''); }} title="ביטול התור"
           className="grid place-items-center w-6 h-6 rounded-full text-berry-700/40 hover:text-rose-500 hover:bg-rose-50 transition">
           <X size={14} />
         </button>
       )}
-      <input ref={inputRef} type="datetime-local" value={value || ''} onChange={e => onChange(e.target.value)}
-        onClick={e => e.stopPropagation()} className="absolute opacity-0 w-0 h-0 pointer-events-none" tabIndex={-1} aria-hidden="true" />
     </div>
   );
 }
